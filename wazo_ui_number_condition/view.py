@@ -50,12 +50,24 @@ class NumberConditionView(BaseIPBXHelperView):
     def _validate_form(self, form):
         valid = form.csrf_token.validate(form)
         valid = form.name.validate(form) and valid
-        valid = form.regex.validate(form) and valid
 
-        destination_form = form.destination.form
-        destination_type = destination_form.type.data
-        if not destination_type:
-            destination_form.type.errors.append(_("A destination is required."))
+        if not form.rules.entries:
+            flash(_("At least one routing rule is required."), "error")
+            valid = False
+        for rule in form.rules:
+            valid = rule.form.regex.validate(rule.form) and valid
+            destination_type = rule.form.destination.form.type.data
+            if not destination_type:
+                rule.form.destination.form.type.errors.append(
+                    _("A destination is required.")
+                )
+                valid = False
+
+        fallback_type = form.fallback_destination.form.type.data
+        if not fallback_type:
+            form.fallback_destination.form.type.errors.append(
+                _("A default destination is required.")
+            )
             valid = False
 
         if not valid:
@@ -63,10 +75,31 @@ class NumberConditionView(BaseIPBXHelperView):
         return valid
 
     def _flash_form_errors(self, form):
-        for field in (form.csrf_token, form.name, form.regex):
+        for field in (form.csrf_token, form.name):
             for error in field.errors:
                 flash(f"{field.label.text} - {error}", "error")
 
-        destination_form = form.destination.form
-        for error in destination_form.type.errors:
-            flash(f"{destination_form.type.label.text} - {error}", "error")
+        for index, rule in enumerate(form.rules, start=1):
+            for error in rule.form.regex.errors:
+                flash(
+                    _(
+                        "Rule %(index)s: %(error)s",
+                        index=index,
+                        error=error,
+                    ),
+                    "error",
+                )
+            destination_type = rule.form.destination.form.type
+            for error in destination_type.errors:
+                flash(
+                    _(
+                        "Rule %(index)s destination: %(error)s",
+                        index=index,
+                        error=error,
+                    ),
+                    "error",
+                )
+
+        fallback_type = form.fallback_destination.form.type
+        for error in fallback_type.errors:
+            flash(f"{fallback_type.label.text} - {error}", "error")

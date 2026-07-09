@@ -53,15 +53,19 @@ class NumberConditionService:
     def _read_rules(self):
         if self._storage_path.exists():
             with self._storage_path.open(encoding="utf-8") as storage_file:
-                return json.load(storage_file)
+                routers = json.load(storage_file)
+            migrated_routers = [self._migrate_router(router) for router in routers]
+            if migrated_routers != routers:
+                self._write_rules(migrated_routers)
+            return migrated_routers
 
         if self._legacy_storage_path.exists():
             with self._legacy_storage_path.open(encoding="utf-8") as storage_file:
                 legacy_rule = json.load(storage_file)
             legacy_rule["id"] = str(uuid.uuid4())
-            rules = [legacy_rule]
-            self._write_rules(rules)
-            return rules
+            routers = [self._migrate_router(legacy_rule)]
+            self._write_rules(routers)
+            return routers
 
         return []
 
@@ -88,3 +92,20 @@ class NumberConditionService:
             if rule["id"] == rule_id:
                 return rule
         raise KeyError(rule_id)
+
+    def _migrate_router(self, router):
+        if "rules" in router:
+            return router
+
+        return {
+            "id": router["id"],
+            "name": router["name"],
+            "enabled": router.get("enabled", True),
+            "rules": [
+                {
+                    "regex": router["regex"],
+                    "destination": router["destination"],
+                }
+            ],
+            "fallback_destination": {"type": "hangup", "cause": "normal"},
+        }

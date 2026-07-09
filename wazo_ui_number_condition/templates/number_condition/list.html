@@ -12,15 +12,15 @@
       {% call build_list_table() %}
         {% call build_list_table_headers(get=url_for('.NumberConditionView:get', id=''), delete=url_for('.NumberConditionView:delete', id='')) %}
           <th>{{ _('Name') }}</th>
-          <th>{{ _('Regular expression') }}</th>
-          <th>{{ _('Destination') }}</th>
+          <th>{{ _('Rules') }}</th>
+          <th>{{ _('Default destination') }}</th>
           <th>{{ _('Enabled') }}</th>
         {% endcall %}
-        {% call(rule) build_list_table_rows(resource_list['items']) %}
-          <td>{{ rule.name }}</td>
-          <td><code>{{ rule.regex }}</code></td>
-          <td>{{ rule.destination.type }}</td>
-          <td>{{ _('Yes') if rule.enabled else _('No') }}</td>
+        {% call(router) build_list_table_rows(resource_list['items']) %}
+          <td>{{ router.name }}</td>
+          <td>{{ router.rules|length }}</td>
+          <td>{{ router.fallback_destination.type }}</td>
+          <td>{{ _('Yes') if router.enabled else _('No') }}</td>
         {% endcall %}
       {% endcall %}
     {% endcall %}
@@ -29,11 +29,40 @@
       {% call build_form() %}
         {% call add_default_fields(form=form, submit_value=_('Add')) %}
           {{ render_field(form.name) }}
-          {{ render_field(form.regex) }}
-          {{ render_field(form.destination, with_label=False) }}
           {{ render_field(form.enabled) }}
+          {{ _build_rules(form) }}
+          {{ render_field(form.fallback_destination, with_label=False) }}
         {% endcall %}
       {% endcall %}
     {% endcall %}
   </section>
 {% endblock %}
+
+{% macro _build_rules(form) %}
+  {{ build_add_row_entry_header() }}
+  {% call build_table() %}
+    {% call build_table_headers() %}
+      <th>{{ _('Regular expression') }}</th>
+      <th>{{ _('Destination') }}</th>
+      <th></th>
+    {% endcall %}
+    {% call build_table_body(class_='dynamic-table') %}
+      {% do form.rules.append_entry() %}
+      {{ _build_rule_entry(form.rules.pop_entry(), template=True) }}
+      {% for rule in form.rules %}
+        {{ _build_rule_entry(rule) }}
+      {% endfor %}
+    {% endcall %}
+  {% endcall %}
+{% endmacro %}
+
+{% macro _build_rule_entry(rule, template=False) %}
+  {% if template %}
+    {% set tr_class = 'row-template hidden' %}
+  {% endif %}
+  <tr class="{{ tr_class }}">
+    <td>{{ render_field(rule.regex, with_label=False, placeholder=_('Example: ^\\+32')) }}</td>
+    <td>{{ render_field(rule.destination, with_label=False) }}</td>
+    <td class="text-center">{{ add_delete_entry_button() }}</td>
+  </tr>
+{% endmacro %}
