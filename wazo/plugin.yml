@@ -1,6 +1,6 @@
 name: wazo-number-condition-plugin
 namespace: serge
-version: 0.0.9
+version: 0.0.10
 author: Serge Bayet
 display_name: Number Condition
 min_wazo_version: 24.00

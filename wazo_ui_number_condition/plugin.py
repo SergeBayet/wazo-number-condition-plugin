@@ -13,8 +13,9 @@ number_condition = create_blueprint("number_condition", __name__)
 class Plugin:
     def load(self, dependencies):
         core = dependencies["flask"]
+        clients = dependencies["clients"]
 
-        NumberConditionView.service = NumberConditionService()
+        NumberConditionView.service = NumberConditionService(clients["wazo_confd"])
         NumberConditionView.register(number_condition, route_base="/number_conditions")
         register_flaskview(number_condition, NumberConditionView)
 

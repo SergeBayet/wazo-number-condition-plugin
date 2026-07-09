@@ -15,8 +15,8 @@ case "$1" in
         mkdir -p "${pkgdir}/usr/lib/python3/dist-packages"
         cp -R wazo_ui_number_condition \
             "${pkgdir}/usr/lib/python3/dist-packages/wazo_ui_number_condition"
-        cp -R wazo-ui-number-condition-0.0.9.dist-info \
-            "${pkgdir}/usr/lib/python3/dist-packages/wazo_ui_number_condition-0.0.9.dist-info"
+        cp -R wazo-ui-number-condition-0.0.10.dist-info \
+            "${pkgdir}/usr/lib/python3/dist-packages/wazo_ui_number_condition-0.0.10.dist-info"
         ;;
     install)
         asterisk -x 'dialplan reload'
