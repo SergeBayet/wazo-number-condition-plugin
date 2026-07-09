@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+    build)
+        ;;
+    package)
+        mkdir -p "${pkgdir}/etc/asterisk/extensions_extra.d"
+        cp asterisk/extensions_extra.d/number-condition.conf \
+            "${pkgdir}/etc/asterisk/extensions_extra.d/number-condition.conf"
+        ;;
+    install)
+        asterisk -x 'dialplan reload'
+        ;;
+    uninstall)
+        ;;
+    *)
+        echo "$0 called with unknown argument '$1'" >&2
+        exit 1
+        ;;
+esac
