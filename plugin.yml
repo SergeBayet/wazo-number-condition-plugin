@@ -7,3 +7,8 @@ min_wazo_version: 24.00
 tags:
   - call-management
 homepage: https://github.com/SergeBayet/wazo-number-condition-plugin
+
+asterisk:
+  config_files:
+    extensions_extra.d/number-condition.conf:
+      source: asterisk/extensions_extra.d/number-condition.conf
