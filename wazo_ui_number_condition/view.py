@@ -57,19 +57,12 @@ class NumberConditionView(BaseIPBXHelperView):
         if not destination_type:
             destination_form.type.errors.append(_("A destination is required."))
             valid = False
-        else:
-            selected_destination = getattr(destination_form, destination_type)
-            for field in selected_destination.form:
-                if field.short_name == "csrf_token":
-                    continue
-                if not field.validate(selected_destination.form):
-                    valid = False
 
         if not valid:
-            self._flash_form_errors(form, destination_type)
+            self._flash_form_errors(form)
         return valid
 
-    def _flash_form_errors(self, form, destination_type):
+    def _flash_form_errors(self, form):
         for field in (form.csrf_token, form.name, form.regex):
             for error in field.errors:
                 flash(f"{field.label.text} - {error}", "error")
@@ -77,13 +70,3 @@ class NumberConditionView(BaseIPBXHelperView):
         destination_form = form.destination.form
         for error in destination_form.type.errors:
             flash(f"{destination_form.type.label.text} - {error}", "error")
-
-        if not destination_type:
-            return
-
-        selected_destination = getattr(destination_form, destination_type).form
-        for field in selected_destination:
-            if field.short_name == "csrf_token":
-                continue
-            for error in field.errors:
-                flash(f"{field.label.text} - {error}", "error")
