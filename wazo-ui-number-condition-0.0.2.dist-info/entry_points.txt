@@ -1,0 +1,2 @@
+[wazo_ui.plugins]
+number_condition = wazo_ui_number_condition.plugin:Plugin

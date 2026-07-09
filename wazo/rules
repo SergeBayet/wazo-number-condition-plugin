@@ -9,11 +9,21 @@ case "$1" in
         mkdir -p "${pkgdir}/etc/asterisk/extensions_extra.d"
         cp asterisk/extensions_extra.d/number-condition.conf \
             "${pkgdir}/etc/asterisk/extensions_extra.d/number-condition.conf"
+        mkdir -p "${pkgdir}/etc/wazo-ui/conf.d"
+        cp wazo-ui-number-condition.yml \
+            "${pkgdir}/etc/wazo-ui/conf.d/number-condition.yml"
+        mkdir -p "${pkgdir}/usr/lib/python3/dist-packages"
+        cp -R wazo_ui_number_condition \
+            "${pkgdir}/usr/lib/python3/dist-packages/wazo_ui_number_condition"
+        cp -R wazo-ui-number-condition-0.0.2.dist-info \
+            "${pkgdir}/usr/lib/python3/dist-packages/wazo_ui_number_condition-0.0.2.dist-info"
         ;;
     install)
         asterisk -x 'dialplan reload'
+        systemctl restart wazo-ui
         ;;
     uninstall)
+        systemctl restart wazo-ui
         ;;
     *)
         echo "$0 called with unknown argument '$1'" >&2
