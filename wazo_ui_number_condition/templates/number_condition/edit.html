@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block content_header %}
+  {{ build_breadcrumbs(current_breadcrumbs + [
+    { 'name': resource.name, 'link': url_for('.NumberConditionView:get', id=resource.id), 'icon': 'filter' }
+  ]) }}
+{% endblock %}
+
+{% block content %}
+  {% call build_section_row() %}
+    {% call build_form(action=url_for('.NumberConditionView:put', id=resource.id)) %}
+      {% call build_form_box(_('Number Condition'), resource.name, 'filter', container_class='col-md-8') %}
+        {% call add_default_fields(form=form, submit_value=_('Update')) %}
+          {{ render_field(form.name) }}
+          {{ render_field(form.regex) }}
+          {{ render_field(form.destination, with_label=False) }}
+          {{ render_field(form.enabled) }}
+        {% endcall %}
+      {% endcall %}
+    {% endcall %}
+  {% endcall %}
+{% endblock %}
