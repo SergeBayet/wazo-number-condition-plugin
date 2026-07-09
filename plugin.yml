@@ -1,0 +1,9 @@
+name: wazo-number-condition-plugin
+namespace: serge
+version: 0.0.1
+author: Serge Bayet
+display_name: Number Condition
+min_wazo_version: 24.00
+tags:
+  - call-management
+homepage: https://github.com/SergeBayet/wazo-number-condition-plugin
