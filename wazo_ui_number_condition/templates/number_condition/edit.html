@@ -9,27 +9,31 @@
 {% block content %}
   {% call build_section_row() %}
     {% call build_form(action=url_for('.NumberConditionView:put', id=resource.id)) %}
-      {% call build_form_box(_('Number Condition'), resource.name, 'filter', container_class='col-md-8') %}
+      {% call build_form_box(_('Number Condition'), resource.name, 'filter', container_class='col-md-6') %}
         {% call add_default_fields(form=form, submit_value=_('Update')) %}
           {{ render_field(form.name) }}
           {{ render_field(form.enabled) }}
-          {{ build_add_row_entry_header() }}
-          {% call build_table() %}
-            {% call build_table_headers() %}
-              <th>{{ _('Regular expression') }}</th>
-              <th>{{ _('Destination') }}</th>
-              <th></th>
-            {% endcall %}
-            {% call build_table_body(class_='dynamic-table') %}
-              {% do form.rules.append_entry() %}
-              {{ _build_rule_entry(form.rules.pop_entry(), template=True) }}
-              {% for rule in form.rules %}
-                {{ _build_rule_entry(rule) }}
-              {% endfor %}
-            {% endcall %}
-          {% endcall %}
           {{ render_field(form.fallback_destination, with_label=False) }}
         {% endcall %}
+      {% endcall %}
+
+      {% call build_form_box(_('Routing Rules'), box_class='box-info', container_class='col-md-6') %}
+        {{ build_add_row_entry_header() }}
+        {% call build_table() %}
+          {% call build_table_headers() %}
+            <th>{{ _('Regular expression') }}</th>
+            <th>{{ _('Destination') }}</th>
+            <th></th>
+          {% endcall %}
+          {% call build_table_body(class_='dynamic-table') %}
+            {% do form.rules.append_entry() %}
+            {{ _build_rule_entry(form.rules.pop_entry(), template=True) }}
+            {% for rule in form.rules %}
+              {{ _build_rule_entry(rule) }}
+            {% endfor %}
+          {% endcall %}
+        {% endcall %}
+        {{ build_add_row_entry_header() }}
       {% endcall %}
     {% endcall %}
   {% endcall %}
